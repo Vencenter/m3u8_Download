@@ -439,17 +439,11 @@ class bilibili_gui(QWidget):
                 self.file_name.addItem(item)
         else:
             self.save_address.setText(filepos)
-            self.down_address.setText(filelink)
-            for item in filedata.keys():
-                self.file_name.addItem(item)
-            #os.startfile(filepos)
-
+            self.down_address.setText(filelink) 
+            if os.path.exists(ffpmpegRoot+"/cache/histy.part"):
+                for item in filedata.keys():
+                    self.file_name.addItem(item)
             
-            
-
-            
-        
- 
    
     def saveAdrss(self):
         #利用文件保存对话框获取文件的路径名称，将存在的json,txt文件拷贝至指定位置。
