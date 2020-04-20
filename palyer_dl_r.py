@@ -299,8 +299,8 @@ class bilibili_gui(QWidget):
             if not os.path.exists(ffpmpegRoot+"/cache/histy.part"):
                 memory_list.append(str(self.down_address.text()))
                 memory_list.append(str(self.save_address.text()))
-                memory_dict[str(self.file_name.text())]=memory_list#根据视频名称切换储存信息。
-
+                memory_dict[str(self.file_name.currentText())]=memory_list#根据视频名称切换储存信息。
+                self.loadImage(data)
                 with open(ffpmpegRoot+"/cache/histy.part","w") as file:
                     json.dump(memory_dict,file)
                     
@@ -364,13 +364,12 @@ class bilibili_gui(QWidget):
 
 
     def startDownload(self):
-        self.setMemory()
         url=str(self.down_address.text())
         save_address=str(self.save_address.text())
-        if str(self.file_name.text())=="":
+        if str(self.file_name.currentText())=="":
             save_address=save_address+"/"+self.createRandomString(6)+".mp4"
         else:
-            save_address=save_address+"/"+str(self.file_name.text())+".mp4"
+            save_address=save_address+"/"+str(self.file_name.currentText())+".mp4"
             
         cmd=ffmpeg + " -i "+ url + " -c copy "+save_address
         
@@ -419,8 +418,10 @@ class bilibili_gui(QWidget):
                 os.startfile(path)
                 
         elif str(self.down_address.text())!="" and str(self.save_address.text())!='' and str(self.file_name.currentText())=="":
-            for item in filedata.keys():
-                self.file_name.addItem(item)
+            if os.path.exists(ffpmpegRoot+"/cache/histy.part"):
+                for item in filedata.keys():
+                    self.file_name.addItem(item)
+
         elif str(self.save_address.text())!='' and str(self.file_name.currentText())!="" and str(self.down_address.text())=="":                                   
             self.down_address.setText(filelink)
         elif str(self.file_name.currentText())!="" and str(self.down_address.text())!="" and  str(self.save_address.text())=='':
@@ -431,19 +432,23 @@ class bilibili_gui(QWidget):
             self.down_address.setText(filelink)
         elif str(self.file_name.currentText())=="" and str(self.down_address.text())!="" and  str(self.save_address.text())=='':
             self.save_address.setText(filepos)
-            for item in filedata.keys():
-                self.file_name.addItem(item)
-        elif str(self.file_name.currentText())=="" and str(self.down_address.text())=="" and  str(self.save_address.text())!='':
-            self.down_address.setText(filelink)
-            for item in filedata.keys():
-                self.file_name.addItem(item)
-        else:
-            self.save_address.setText(filepos)
-            self.down_address.setText(filelink) 
             if os.path.exists(ffpmpegRoot+"/cache/histy.part"):
                 for item in filedata.keys():
                     self.file_name.addItem(item)
-            
+
+        elif str(self.file_name.currentText())=="" and str(self.down_address.text())=="" and  str(self.save_address.text())!='':
+            self.down_address.setText(filelink)
+            if os.path.exists(ffpmpegRoot+"/cache/histy.part"):
+                for item in filedata.keys():
+                    self.file_name.addItem(item)
+
+        else:
+            self.save_address.setText(filepos)
+            self.down_address.setText(filelink)
+            if os.path.exists(ffpmpegRoot+"/cache/histy.part"):
+                for item in filedata.keys():
+                    self.file_name.addItem(item)
+    
    
     def saveAdrss(self):
         #利用文件保存对话框获取文件的路径名称，将存在的json,txt文件拷贝至指定位置。
